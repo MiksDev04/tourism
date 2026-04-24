@@ -1,16 +1,16 @@
-// lib/ui/admin/pages/profile_page.dart
+// lib/ui/admin/pages/admin_messages_page.dart
 import 'package:flutter/material.dart';
 import '../../shared/layouts/admin_layout.dart';
 
-class AdminProfilePage extends StatelessWidget {
-  const AdminProfilePage({super.key});
+class AdminMessagesPage extends StatelessWidget {
+  const AdminMessagesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AdminLayout(
-      selectedIndex: 4,
+      selectedIndex: 3,
       child: const Center(
-        child: Text('Profile Page - Coming Soon'),
+        child: Text('Messages Page - Coming Soon'),
       ),
     );
   }

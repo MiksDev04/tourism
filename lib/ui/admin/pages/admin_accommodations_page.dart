@@ -1,9 +1,9 @@
-// lib/ui/admin/pages/accommodations_page.dart
+// lib/ui/admin/pages/admin_accommodations_page.dart
 import 'package:flutter/material.dart';
 import '../../shared/layouts/admin_layout.dart';
 
-class AccommodationsPage extends StatelessWidget {
-  const AccommodationsPage({super.key});
+class AdminAccommodationsPage extends StatelessWidget {
+  const AdminAccommodationsPage({super.key});
 
   @override
   Widget build(BuildContext context) {

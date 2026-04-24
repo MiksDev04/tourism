@@ -1,4 +1,4 @@
-// lib/ui/admin/pages/dashboard_page.dart
+// lib/ui/admin/pages/admin_dashboard_page.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';

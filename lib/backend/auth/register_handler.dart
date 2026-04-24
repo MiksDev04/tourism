@@ -1,73 +1,82 @@
-import 'package:mysql1/mysql1.dart';
-import 'package:bcrypt/bcrypt.dart';
-import 'package:uuid/uuid.dart';
+// lib/backend/auth/register_handler.dart
 import '../../core/services/database_service.dart';
+import '../../core/services/auth_service.dart';
 
 class RegisterHandler {
   final DatabaseService _dbService = DatabaseService.instance;
-  final Uuid _uuid = const Uuid();
 
-  Future<bool> registerBusiness({
-    required String businessName,
-    required String email,
-    required String password,
-    required String ownerName,
-    required String businessType,
-    required String contactNumber,
-    required String address,
-    required int totalRooms,
-  }) async {
+  Future<Map<String, dynamic>> registerBusiness(Map<String, dynamic> businessData) async {
     try {
       final conn = await _dbService.connection;
       
       // Check if email already exists
       final existingUser = await conn.query(
         'SELECT email FROM users WHERE email = ?',
-        [email],
+        [businessData['email']],
       );
       
       if (existingUser.isNotEmpty) {
-        throw Exception('Email already registered');
+        return {
+          'success': false,
+          'message': 'Email already registered'
+        };
+      }
+      
+      // Check if username already exists
+      final existingUsername = await conn.query(
+        'SELECT username FROM users WHERE username = ?',
+        [businessData['username']],
+      );
+      
+      if (existingUsername.isNotEmpty) {
+        return {
+          'success': false,
+          'message': 'Username already taken'
+        };
       }
       
       // Start transaction
       await conn.query('START TRANSACTION');
       
       try {
-        final userId = _uuid.v4();
-        final businessId = _uuid.v4();
-        final passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+        // Hash password
+        final passwordHash = await AuthService.hashPassword(businessData['password']);
         
         // Insert user
-        await conn.query(
-          'INSERT INTO users (user_id, username, email, password_hash, full_name, role, status) '
-          'VALUES (?, ?, ?, ?, ?, ?, ?)',
+        final userResult = await conn.query(
+          'INSERT INTO users (username, email, password_hash, full_name, role, status) '
+          'VALUES (?, ?, ?, ?, ?, ?)',
           [
-            userId,
-            businessName.replaceAll(' ', '_').toLowerCase(),
-            email,
+            businessData['username'],
+            businessData['email'],
             passwordHash,
-            ownerName,
+            businessData['full_name'],
             'business',
             'pending'
           ],
         );
         
+        final userId = userResult.insertId;
+        
         // Insert business
         await conn.query(
-          'INSERT INTO businesses (business_id, user_id, business_name, business_type, owner_name, '
-          'address, contact_number, email, total_rooms, status) '
-          'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          'INSERT INTO businesses (user_id, business_name, business_type, owner_name, '
+          'permit_number, registration_number, address, contact_number, email, total_rooms, '
+          'permit_file_url, valid_id_url, status) '
+          'VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
-            businessId,
             userId,
-            businessName,
-            businessType,
-            ownerName,
-            address,
-            contactNumber,
-            email,
-            totalRooms,
+            businessData['business_name'],
+            businessData['business_type'],
+            businessData['owner_name'],
+            businessData['permit_number'],
+            businessData['registration_number'],
+            businessData['address'],
+            businessData['contact_number'],
+            businessData['business_email'],
+            businessData['total_rooms'],
+            businessData['permit_file_path'],
+            businessData['valid_id_path'],
             'pending'
           ],
         );
@@ -75,14 +84,23 @@ class RegisterHandler {
         // Commit transaction
         await conn.query('COMMIT');
         
-        return true;
+        return {
+          'success': true,
+          'message': 'Registration submitted successfully'
+        };
       } catch (e) {
         await conn.query('ROLLBACK');
-        rethrow;
+        return {
+          'success': false,
+          'message': 'Registration failed: $e'
+        };
       }
     } catch (e) {
       print('Registration error: $e');
-      rethrow;
+      return {
+        'success': false,
+        'message': 'Connection error: $e'
+      };
     }
   }
 }

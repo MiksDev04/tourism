@@ -1,16 +1,16 @@
-// lib/ui/admin/pages/messages_page.dart
+// lib/ui/admin/pages/admin_reports_page.dart
 import 'package:flutter/material.dart';
 import '../../shared/layouts/admin_layout.dart';
 
-class MessagesPage extends StatelessWidget {
-  const MessagesPage({super.key});
+class AdminReportsPage extends StatelessWidget {
+  const AdminReportsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return AdminLayout(
-      selectedIndex: 3,
+      selectedIndex: 2,
       child: const Center(
-        child: Text('Messages Page - Coming Soon'),
+        child: Text('Reports Page - Coming Soon'),
       ),
     );
   }

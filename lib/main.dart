@@ -1,7 +1,5 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'core/services/database_service.dart';
 import 'backend/auth/seeder_handler.dart';
 import 'app.dart';

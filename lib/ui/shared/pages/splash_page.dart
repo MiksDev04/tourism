@@ -123,7 +123,7 @@ class _SplashPageState extends State<SplashPage> {
                   const SizedBox(height: 60),
                   
                   // Modern loading indicator
-                  Container(
+                  SizedBox(
                     width: 40,
                     height: 40,
                     child: const CircularProgressIndicator(

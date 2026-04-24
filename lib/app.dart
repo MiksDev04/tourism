@@ -134,7 +134,7 @@ class MyApp extends StatelessWidget {
         
         // Data Table Theme
         dataTableTheme: DataTableThemeData(
-          headingRowColor: MaterialStateProperty.all(AppColors.primary.withOpacity(0.05)),
+          headingRowColor: WidgetStateProperty.all(AppColors.primary.withOpacity(0.05)),
           headingTextStyle: GoogleFonts.inter(fontWeight: FontWeight.w600, color: AppColors.textDark),
           dataTextStyle: GoogleFonts.inter(fontSize: 13, color: AppColors.textMedium),
           decoration: BoxDecoration(

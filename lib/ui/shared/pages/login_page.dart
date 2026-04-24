@@ -1,4 +1,4 @@
-// lib/ui/admin/pages/admin_login_page.dart
+// lib/ui/shared/pages/login_page.dart
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
@@ -6,14 +6,14 @@ import '../../../core/constants/strings.dart';
 import '../../../core/utils/validators.dart';
 import '../../../backend/auth/login_handler.dart';
 
-class AdminLoginPage extends StatefulWidget {
-  const AdminLoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<AdminLoginPage> createState() => _AdminLoginPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _AdminLoginPageState extends State<AdminLoginPage> {
+class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -44,12 +44,18 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     
     if (!mounted) return;
     
-    if (result['success'] && result['role'] == 'admin') {
-      Navigator.pushReplacementNamed(context, '/admin/dashboard');
-    } else if (result['success'] && result['role'] != 'admin') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Access denied. Admin only.')),
-      );
+    if (result['success']) {
+      final role = result['role'];
+      
+      if (role == 'admin') {
+        Navigator.pushReplacementNamed(context, '/admin/dashboard');
+      } else if (role == 'business') {
+        Navigator.pushReplacementNamed(context, '/business/dashboard');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid user role.')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result['message'])),
@@ -188,7 +194,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Tourism Office Access Only',
+                            'Sign in to your account',
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               color: AppColors.textMedium,
@@ -304,6 +310,40 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                           
                           const SizedBox(height: 20),
                           
+                          // Register Link for Businesses
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Don't have an account? ",
+                                style: GoogleFonts.inter(
+                                  fontSize: 14,
+                                  color: AppColors.textMedium,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, '/business/register');
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                  minimumSize: const Size(0, 0),
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  AppStrings.register,
+                                  style: GoogleFonts.inter(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          
+                          const SizedBox(height: 16),
+                          
                           // Demo Credentials Hint
                           Container(
                             padding: const EdgeInsets.all(16),
@@ -311,18 +351,29 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               color: AppColors.primary.withOpacity(0.08),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Row(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.info_outline, size: 20, color: AppColors.primary),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    'Demo Admin: admin@sanpablo.gov.ph',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 12,
-                                      color: AppColors.primaryDark,
-                                      fontWeight: FontWeight.w500,
+                                Row(
+                                  children: [
+                                    Icon(Icons.info_outline, size: 20, color: AppColors.primary),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'Demo Credentials',
+                                      style: GoogleFonts.inter(
+                                        fontSize: 12,
+                                        color: AppColors.primaryDark,
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Admin: admin@sanpablo.gov.ph\nBusiness: business@example.com',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 11,
+                                    color: AppColors.textMedium,
                                   ),
                                 ),
                               ],
